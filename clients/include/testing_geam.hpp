@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "hipblas.hpp"
-#include "hipblas_unique_ptr.hpp"
+// #include "hipblas_unique_ptr.hpp"
 #include "norm.h"
 #include "unit.h"
 #include "utility.h"
@@ -23,6 +23,7 @@ using namespace std;
 template <typename T>
 hipblasStatus_t testing_geam(Arguments argus)
 {
+//  return HIPBLAS_STATUS_SUCCESS;
     int M = argus.M;
     int N = argus.N;
 
@@ -45,6 +46,9 @@ hipblasStatus_t testing_geam(Arguments argus)
     hipblasStatus_t status1 = HIPBLAS_STATUS_SUCCESS;
     hipblasStatus_t status2 = HIPBLAS_STATUS_SUCCESS;
     hipblasCreate(&handle);
+
+//  hipblasDestroy(handle);
+//  return HIPBLAS_STATUS_SUCCESS;
 
     if(transA == HIPBLAS_OP_N)
     {
@@ -87,22 +91,27 @@ hipblasStatus_t testing_geam(Arguments argus)
     }
 
     // allocate memory on device
-    auto dA_managed
-        = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T) * A_size), hipblas::device_free};
-    auto dB_managed
-        = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T) * B_size), hipblas::device_free};
-    auto dC_managed
-        = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T) * C_size), hipblas::device_free};
-    auto d_alpha_managed
+    T *dA, *dB, *dC;
+    CHECK_HIP_ERROR(hipMalloc(&dA, A_size*sizeof(T)));
+    CHECK_HIP_ERROR(hipMalloc(&dB, B_size*sizeof(T)));
+    CHECK_HIP_ERROR(hipMalloc(&dC, C_size*sizeof(T)));
+
+//  CHECK_HIP_ERROR(hipFree(dA));
+//  CHECK_HIP_ERROR(hipFree(dB));
+//  CHECK_HIP_ERROR(hipFree(dC));
+//  hipblasDestroy(handle);
+//  return HIPBLAS_STATUS_SUCCESS;
+
+/*  auto d_alpha_managed
         = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T)), hipblas::device_free};
+
     auto d_beta_managed
         = hipblas_unique_ptr{hipblas::device_malloc(sizeof(T)), hipblas::device_free};
-    T* dA      = (T*)dA_managed.get();
-    T* dB      = (T*)dB_managed.get();
-    T* dC      = (T*)dC_managed.get();
-    T* d_alpha = (T*)d_alpha_managed.get();
-    T* d_beta  = (T*)d_beta_managed.get();
-    if(!dA || !dB || !dC || !d_alpha || !d_beta)
+*/
+//  T* d_alpha = (T*)d_alpha_managed.get();
+//  T* d_beta  = (T*)d_beta_managed.get();
+//  if(!dA || !dB || !dC || !d_alpha || !d_beta)
+    if(!dA || !dB || !dC                       )
     {
         hipblasDestroy(handle);
         return HIPBLAS_STATUS_ALLOC_FAILED;
@@ -128,8 +137,15 @@ hipblasStatus_t testing_geam(Arguments argus)
     CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dB, hB.data(), sizeof(T) * B_size, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dC, hC1.data(), sizeof(T) * C_size, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
+ // CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
+ // CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
+
+//  CHECK_HIP_ERROR(hipFree(dA));
+//  CHECK_HIP_ERROR(hipFree(dB));
+//  CHECK_HIP_ERROR(hipFree(dC));
+//  hipblasDestroy(handle);
+//  return HIPBLAS_STATUS_SUCCESS;
+
 
     /* =====================================================================
          ROCBLAS
@@ -140,6 +156,9 @@ hipblasStatus_t testing_geam(Arguments argus)
 
         if(status1 != HIPBLAS_STATUS_SUCCESS)
         {
+            CHECK_HIP_ERROR(hipFree(dA));
+            CHECK_HIP_ERROR(hipFree(dB));
+            CHECK_HIP_ERROR(hipFree(dC));
             hipblasDestroy(handle);
             return status1;
         }
@@ -147,20 +166,35 @@ hipblasStatus_t testing_geam(Arguments argus)
         status2 = hipblasGeam<T>(
             handle, transA, transB, M, N, &h_alpha, dA, lda, &h_beta, dB, ldb, dC, ldc);
 
+    CHECK_HIP_ERROR(hipFree(dA));
+    CHECK_HIP_ERROR(hipFree(dB));
+    CHECK_HIP_ERROR(hipFree(dC));
+    hipblasDestroy(handle);
+    return HIPBLAS_STATUS_SUCCESS;
+
+
         if(status2 != HIPBLAS_STATUS_SUCCESS)
         {
+            CHECK_HIP_ERROR(hipFree(dA));
+            CHECK_HIP_ERROR(hipFree(dB));
+            CHECK_HIP_ERROR(hipFree(dC));
             hipblasDestroy(handle);
             return status2;
         }
 
         CHECK_HIP_ERROR(hipMemcpy(hC1.data(), dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
     }
+//  return HIPBLAS_STATUS_SUCCESS;
+/*
     {
         // d_alpha and d_beta are device pointers
         status1 = hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE);
 
         if(status1 != HIPBLAS_STATUS_SUCCESS)
         {
+            CHECK_HIP_ERROR(hipFree(dA));
+            CHECK_HIP_ERROR(hipFree(dB));
+            CHECK_HIP_ERROR(hipFree(dC));
             hipblasDestroy(handle);
             return status1;
         }
@@ -172,12 +206,16 @@ hipblasStatus_t testing_geam(Arguments argus)
 
         if(status2 != HIPBLAS_STATUS_SUCCESS)
         {
+            CHECK_HIP_ERROR(hipFree(dA));
+            CHECK_HIP_ERROR(hipFree(dB));
+            CHECK_HIP_ERROR(hipFree(dC));
             hipblasDestroy(handle);
             return status2;
         }
 
         CHECK_HIP_ERROR(hipMemcpy(hC2.data(), dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
     }
+*/
 
     /* =====================================================================
             CPU BLAS
@@ -204,9 +242,12 @@ hipblasStatus_t testing_geam(Arguments argus)
     if(argus.unit_check)
     {
         unit_check_general<T>(M, N, ldc, hC_copy.data(), hC1.data());
-        unit_check_general<T>(M, N, ldc, hC_copy.data(), hC2.data());
+//      unit_check_general<T>(M, N, ldc, hC_copy.data(), hC2.data());
     }
 
+    CHECK_HIP_ERROR(hipFree(dA));
+    CHECK_HIP_ERROR(hipFree(dB));
+    CHECK_HIP_ERROR(hipFree(dC));
     hipblasDestroy(handle);
     return HIPBLAS_STATUS_SUCCESS;
 }
