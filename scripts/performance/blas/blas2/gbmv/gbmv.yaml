@@ -1,0 +1,25 @@
+---
+include: ../../hipblas_common.yaml
+
+Definitions:
+
+Tests:
+- name: gbmv
+  function: gbmv
+  precision: *single_double_precisions
+  m: 2048
+  n: 2048
+  M: 20480
+  N: 20480
+  lda: 2048
+  LDA: 20480
+  transA: N
+  alpha: 1
+  beta: 1
+  incx: 1
+  incy: 1
+  kl: 512
+  ku: 512
+  step_size: 2048
+  samples: 10
+...

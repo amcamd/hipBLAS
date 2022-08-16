@@ -1,0 +1,20 @@
+---
+include: ../../hipblas_common.yaml
+
+Definitions:
+
+Tests:
+- name: tpmv
+  function: tpmv
+  precision: *single_double_precisions
+  fill: L
+  transA: N
+  diag: N
+  m: 2048
+  M: 20480
+  lda: 2048
+  LDA: 20480
+  incx: 1
+  step_size: 2048
+  samples: 10
+...

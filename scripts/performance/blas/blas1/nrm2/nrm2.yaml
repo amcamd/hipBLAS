@@ -1,0 +1,16 @@
+---
+include: ../../hipblas_common.yaml
+
+Definitions:
+
+Tests:
+- name: nrm2
+  function: nrm2
+  precision: *single_double_precisions
+  n: 2048000
+  N: 20480000
+  incx: 1
+  incy: 1
+  step_size: 2048000
+  samples: 10
+...

@@ -1,0 +1,19 @@
+---
+include: ../../hipblas_common.yaml
+
+Definitions:
+
+Tests:
+- name: syr
+  function: syr
+  precision: *single_double_precisions
+  fill: L
+  n: 2048
+  N: 20480
+  lda: 2048
+  LDA: 20480
+  alpha: 1
+  incx: 1
+  step_size: 2048
+  samples: 10
+...

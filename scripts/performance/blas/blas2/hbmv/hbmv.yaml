@@ -1,0 +1,23 @@
+---
+include: ../../hipblas_common.yaml
+
+Definitions:
+
+Tests:
+- name: hbmv
+  function: hbmv
+  precision: *single_double_precisions_complex
+  fill: L
+  n: 2048
+  N: 20480
+  lda: 2048
+  LDA: 20480
+  alpha: 1
+  beta: 1
+  incx: 1
+  incy: 1
+  kl: 512
+  ku: 512
+  step_size: 2048
+  samples: 10
+...

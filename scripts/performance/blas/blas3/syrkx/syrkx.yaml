@@ -1,0 +1,26 @@
+---
+include: ../../hipblas_common.yaml
+
+Definitions:
+
+Tests:
+- name: syrkx
+  function: syrkx
+  precision: *single_double_precisions
+  n: 512
+  k: 512
+  N: 8192
+  K: 8192
+  lda: 512
+  ldb: 512
+  ldc: 512
+  LDA: 8192
+  LDB: 8192
+  LDC: 8192
+  fill: L
+  transA: N
+  alpha: 1
+  beta: 1
+  step_size: 512
+  samples: 10
+...

@@ -1,0 +1,25 @@
+---
+include: ../../hipblas_common.yaml
+
+Definitions:
+
+Tests:
+- name: tpsv
+  function: tpsv
+  precision: *single_double_precisions
+  fill: L
+  transA: N
+  diag: N
+# m: 1024
+# M: 4096
+# M: 10240
+  n: 1024
+  N: 4096
+# N: 10240
+  lda: 1024
+  LDA: 4096
+# LDA: 10240
+  incx: 1
+  step_size: 1024
+  samples: 10
+...
