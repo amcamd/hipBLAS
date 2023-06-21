@@ -14561,42 +14561,19 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZhemmStridedBatched(hipblasHandle_t       
 
     \details
 
-    The deprecated Legacy BLAS in-place trmm performs one of the matrix-matrix operations:
+    trmm performs one of the matrix-matrix operations
 
-        B := alpha*op( A )*B,   or
-        B := alpha*B*op( A ),
+    C := alpha*op( A )*B,   or   C := alpha*B*op( A )
 
-    The new trmm performs one of the matrix-matrix operations:
+    where  alpha  is a scalar, B and C are an m by n matrices,  A  is a unit, or
+    non-unit,  upper or lower triangular matrix  and  op( A )  is one  of
 
-        C := alpha*op( A )*B,   or
-        C := alpha*B*op( A ),
+        op( A ) = A   or   op( A ) = A^T   or   op( A ) = A^H.
 
-    The in-place functionality is still available in the new trmmm by setting pointer C equal to pointer B,
-    and ldc equal to ldb.
+    Note that trmm can provide in-place functionality by passing in the same address for both
+    matrices B and C.
 
-        alpha  is a scalar,  B  is an m by n matrix, C  is an m by n matrix,  A  is a unit, or
-        non-unit,  upper or lower triangular matrix  and  op( A )  is one  of
-
-        op( A ) = A     or
-        op( A ) = A^T   or
-        op( A ) = A^H.
-
-        When uplo == rocblas_fill_upper the  leading  k by k
-        upper triangular part of the array  A must contain the upper
-        triangular matrix and the strictly lower triangular part of
-        A is not referenced. Here k is m when side == rocblas_side_left
-        and is n when side == rocblas_side_right.
-
-        When uplo == rocblas_fill_lower the  leading  k by k
-        lower triangular part of the array  A must contain the lower
-        triangular matrix  and the strictly upper triangular part of
-        A is not referenced. Here k is m when  side == rocblas_side_left
-        and is n when side == rocblas_side_right.
-
-        Note that when  diag == rocblas_diagonal_unit  the diagonal elements of
-        A  are not referenced either,  but are assumed to be  unity.
-
-    - Supported precisions in hipBLAS : s,d,c,z
+    - Supported precisions in rocBLAS : s,d,c,z
     - Supported precisions in cuBLAS  : s,d,c,z
 
     @param[in]
@@ -14606,8 +14583,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZhemmStridedBatched(hipblasHandle_t       
     @param[in]
     side    [hipblasSideMode_t]
             Specifies whether op(A) multiplies B from the left or right as follows:
-            HIPBLAS_SIDE_LEFT:       B := alpha*op( A )*B.
-            HIPBLAS_SIDE_RIGHT:      B := alpha*B*op( A ).
+            HIPBLAS_SIDE_LEFT:       C := alpha*op( A )*B.
+            HIPBLAS_SIDE_RIGHT:      C := alpha*B*op( A ).
 
     @param[in]
     uplo    [hipblasFillMode_t]
@@ -14620,7 +14597,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZhemmStridedBatched(hipblasHandle_t       
             Specifies the form of op(A) to be used in the matrix multiplication as follows:
             HIPBLAS_OP_N: op(A) = A.
             HIPBLAS_OP_T: op(A) = A^T.
-            HIPBLAS_OP_C:  op(A) = A^H.
+            HIPBLAS_OP_C: op(A) = A^H.
 
     @param[in]
     diag    [hipblasDiagType_t]
@@ -14630,11 +14607,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZhemmStridedBatched(hipblasHandle_t       
 
     @param[in]
     m       [int]
-            m specifies the number of rows of B. m >= 0.
+            m specifies the number of rows of B and C. m >= 0.
 
     @param[in]
     n       [int]
-            n specifies the number of columns of B. n >= 0.
+            n specifies the number of columns of B and C. n >= 0.
 
     @param[in]
     alpha
@@ -14643,7 +14620,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZhemmStridedBatched(hipblasHandle_t       
             entry.
 
     @param[in]
-    AP       Device pointer to matrix A on the GPU.
+    A       Device pointer to matrix A on the GPU.
             A has dimension ( lda, k ), where k is m
             when  side == HIPBLAS_SIDE_LEFT  and
             is  n  when  side == HIPBLAS_SIDE_RIGHT.
@@ -14668,14 +14645,19 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZhemmStridedBatched(hipblasHandle_t       
             if side == HIPBLAS_SIDE_RIGHT, lda >= max( 1, n ).
 
     @param[inout]
-    BP       Device pointer to the first matrix B_0 on the GPU.
-            On entry,  the leading  m by n part of the array  B must
-           contain the matrix  B,  and  on exit  is overwritten  by the
-           transformed matrix.
+    B       Device pointer to the matrix B of dimension (ldb, n) on the GPU.
 
     @param[in]
     ldb    [int]
            ldb specifies the first dimension of B. ldb >= max( 1, m ).
+
+    @param[in]
+    C      Device pointer to the matrix C of dimension (ldc, n) on the GPU.
+           Users can pass in the same matrix B to parameter C to achieve
+           in-place functionality of trmm.
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C. ldc >= max( 1, m ).
 
     ********************************************************************/
 
@@ -14687,11 +14669,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrmm(hipblasHandle_t    handle,
                                             int                m,
                                             int                n,
                                             const float*       alpha,
-                                            const float*       AP,
+                                            const float*       A,
                                             int                lda,
-                                            const float*       BP,
+                                            const float*       B,
                                             int                ldb,
-                                            float*             CP,
+                                            float*             C,
                                             int                ldc);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmm(hipblasHandle_t    handle,
@@ -14702,11 +14684,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmm(hipblasHandle_t    handle,
                                             int                m,
                                             int                n,
                                             const double*      alpha,
-                                            const double*      AP,
+                                            const double*      A,
                                             int                lda,
-                                            const double*      BP,
+                                            const double*      B,
                                             int                ldb,
-                                            double*            CP,
+                                            double*            C,
                                             int                ldc);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmm(hipblasHandle_t       handle,
@@ -14717,11 +14699,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmm(hipblasHandle_t       handle,
                                             int                   m,
                                             int                   n,
                                             const hipblasComplex* alpha,
-                                            const hipblasComplex* AP,
+                                            const hipblasComplex* A,
                                             int                   lda,
-                                            const hipblasComplex* BP,
+                                            const hipblasComplex* B,
                                             int                   ldb,
-                                            hipblasComplex*       CP,
+                                            hipblasComplex*       C,
                                             int                   ldc);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmm(hipblasHandle_t             handle,
@@ -14732,42 +14714,32 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmm(hipblasHandle_t             handle,
                                             int                         m,
                                             int                         n,
                                             const hipblasDoubleComplex* alpha,
-                                            const hipblasDoubleComplex* AP,
+                                            const hipblasDoubleComplex* A,
                                             int                         lda,
-                                            const hipblasDoubleComplex* BP,
+                                            const hipblasDoubleComplex* B,
                                             int                         ldb,
-                                            hipblasDoubleComplex*       CP,
+                                            hipblasDoubleComplex*       C,
                                             int                         ldc);
+//! @}
 
 /*! @{
     \brief BLAS Level 3 API
 
     \details
-    The hipBLAS trmm_batched API is from Legacy BLAS and it supports only in-place functionality.
-    It is deprecated and it will be replaced with an API that supports both in-place and
-    out-of-place functionality. The new API is available in hipBLAS versions 1.x.x and later.
-    To get the new API compile with the directive -DHIPBLAS_V1.
 
-    The deprecated Legacy BLAS in-place trmm_batched performs one of the batched matrix-matrix operations:
+    trmmBatched performs one of the batched matrix-matrix operations
 
-        B_i := alpha*op( A_i )*B_i,   or
-        B_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batch_count -1,
+    C_i := alpha*op( A_i )*B_i,   or   C_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batchCount -1
 
-    The new trmm_batched performs one of the matrix-matrix operations:
-
-        C_i := alpha*op( A_i )*B_i,   or
-        C_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batch_count -1,
-
-    The in-place functionality is still available in the new trmmm_batched by setting pointer C equal to pointer B
-    and ldc equal to ldb.
-
-        alpha  is a scalar,  B_i  is an m by n matrix, C_i  is an m by n matrix,  A_i  is a unit, or
-        non-unit,  upper or lower triangular matrix  and  op( A_i )  is one  of
+    where alpha is a scalar, B_i and C_i are m by n matrices, A_i is a unit, or
+    non-unit, upper or lower triangular matrix and op( A_i ) is one of
 
         op( A_i ) = A_i   or   op( A_i ) = A_i^T   or   op( A_i ) = A_i^H.
 
+    Note that trmmBatched can provide in-place functionality by passing in the same address for both
+    matrices B and C.
 
-    - Supported precisions in hipBLAS : s,d,c,z
+    - Supported precisions in rocBLAS : s,d,c,z
     - Supported precisions in cuBLAS  : No support
 
     @param[in]
@@ -14789,8 +14761,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmm(hipblasHandle_t             handle,
     @param[in]
     transA  [hipblasOperation_t]
             Specifies the form of op(A_i) to be used in the matrix multiplication as follows:
-            HIPBLAS_OP_N:    op(A_i) = A_i.
-            HIPBLAS_OP_T:      op(A_i) = A_i^T.
+            HIPBLAS_OP_N:  op(A_i) = A_i.
+            HIPBLAS_OP_T:  op(A_i) = A_i^T.
             HIPBLAS_OP_C:  op(A_i) = A_i^H.
 
     @param[in]
@@ -14801,11 +14773,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmm(hipblasHandle_t             handle,
 
     @param[in]
     m       [int]
-            m specifies the number of rows of B_i. m >= 0.
+            m specifies the number of rows of B_i and C_i. m >= 0.
 
     @param[in]
     n       [int]
-            n specifies the number of columns of B_i. n >= 0.
+            n specifies the number of columns of B_i and C_i. n >= 0.
 
     @param[in]
     alpha
@@ -14814,7 +14786,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmm(hipblasHandle_t             handle,
             entry.
 
     @param[in]
-    AP       Device array of device pointers storing each matrix A_i on the GPU.
+    A       Device array of device pointers storing each matrix A_i on the GPU.
             Each A_i is of dimension ( lda, k ), where k is m
             when  side == HIPBLAS_SIDE_LEFT  and
             is  n  when  side == HIPBLAS_SIDE_RIGHT.
@@ -14839,14 +14811,20 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmm(hipblasHandle_t             handle,
             if side == HIPBLAS_SIDE_RIGHT, lda >= max( 1, n ).
 
     @param[inout]
-    BP       device array of device pointers storing each matrix B_i on the GPU.
-            On entry,  the leading  m by n part of the array  B_i must
-           contain the matrix  B_i,  and  on exit  is overwritten  by the
-           transformed matrix.
+    B       device array of device pointers storing each matrix B_i of
+            dimension (ldb, n) on the GPU.
 
     @param[in]
     ldb    [int]
            ldb specifies the first dimension of B_i. ldb >= max( 1, m ).
+
+    @param[in]
+    C      device array of device pointers storing each matrix C_i of
+           dimension (ldc, n) on the GPU. Users can pass in the same
+           matrices B to parameter C to achieve in-place functionality of trmmBatched.
+
+    @param[in]
+    ldc    lec specifies the first dimension of C_i. ldc >= max( 1, m ).
 
     @param[in]
     batchCount [int]
@@ -14861,11 +14839,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmBatched(hipblasHandle_t    handle,
                                                    int                m,
                                                    int                n,
                                                    const float*       alpha,
-                                                   const float* const AP[],
+                                                   const float* const A[],
                                                    int                lda,
-                                                   const float* const BP[],
+                                                   const float* const B[],
                                                    int                ldb,
-                                                   float* const       CP[],
+                                                   float* const       C[],
                                                    int                ldc,
                                                    int                batchCount);
 
@@ -14877,11 +14855,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmmBatched(hipblasHandle_t     handle,
                                                    int                 m,
                                                    int                 n,
                                                    const double*       alpha,
-                                                   const double* const AP[],
+                                                   const double* const A[],
                                                    int                 lda,
-                                                   const double* const BP[],
+                                                   const double* const B[],
                                                    int                 ldb,
-                                                   double* const       CP[],
+                                                   double* const       C[],
                                                    int                 ldc,
                                                    int                 batchCount);
 
@@ -14893,11 +14871,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmBatched(hipblasHandle_t             h
                                                    int                         m,
                                                    int                         n,
                                                    const hipblasComplex*       alpha,
-                                                   const hipblasComplex* const AP[],
+                                                   const hipblasComplex* const A[],
                                                    int                         lda,
-                                                   const hipblasComplex* const BP[],
+                                                   const hipblasComplex* const B[],
                                                    int                         ldb,
-                                                   hipblasComplex* const       CP[],
+                                                   hipblasComplex* const       C[],
                                                    int                         ldc,
                                                    int                         batchCount);
 
@@ -14909,44 +14887,33 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatched(hipblasHandle_t              
                                                    int                               m,
                                                    int                               n,
                                                    const hipblasDoubleComplex*       alpha,
-                                                   const hipblasDoubleComplex* const AP[],
+                                                   const hipblasDoubleComplex* const A[],
                                                    int                               lda,
-                                                   const hipblasDoubleComplex* const BP[],
+                                                   const hipblasDoubleComplex* const B[],
                                                    int                               ldb,
-                                                   hipblasDoubleComplex* const       CP[],
+                                                   hipblasDoubleComplex* const       C[],
                                                    int                               ldc,
                                                    int                               batchCount);
+//! @}
 
 /*! @{
     \brief BLAS Level 3 API
 
     \details
-    The hipBLAS trmm_strided_batched API is from Legacy BLAS and it supports only in-place functionality.
-    It is deprecated and it will be replaced with an API that supports both in-place and
-    out-of-place functionality. The new API is available in hipBLAS versions 1.x.x and later.
-    To get the new API compile with the directive -DHIPBLAS_V1.
 
-    The deprecated Legacy BLAS in-place trmm_strided_batched performs one of the strided_batched matrix-matrix operations:
+    trmmStridedBatched performs one of the strided_batched matrix-matrix operations
 
-        B_i := alpha*op( A_i )*B_i,   or
-        B_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batch_count -1,
+    C_i := alpha*op( A_i )*B_i,   or   C_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batchCount -1
 
-    The new trmm_batched performs one of the matrix-matrix operations:
+    where alpha is a scalar,  B_i and C_i are m by n matrices, A_i is a unit, or
+    non-unit, upper or lower triangular matrix and op( A_i ) is one of
 
-        C_i := alpha*op( A_i )*B_i,   or
-        C_i := alpha*B_i*op( A_i )  for i = 0, 1, ... batch_count -1,
+        op( A_i ) = A_i   or   op( A_i ) = A_i^T   or   op( A_i ) = A_i^H.
 
-    The in-place functionality is still available in the new trmmm_batched by setting pointer C equal to pointer B,
-    setting ldc equal to ldb, and setting stride_C equal to stride_B.
+    Note that trmmStridedBatched can provide in-place functionality by passing
+    in the same address for both matrices B and C.
 
-        alpha  is a scalar,  B_i  is an m by n matrix, C_i  is an m by n matrix,  A_i  is a unit, or
-        non-unit,  upper or lower triangular matrix  and  op( A_i )  is one  of
-
-        op( A_i ) = A_i   or
-        op( A_i ) = A_i^T   or
-        op( A_i ) = A_i^H.
-
-    - Supported precisions in hipBLAS : s,d,c,z
+    - Supported precisions in rocBLAS : s,d,c,z
     - Supported precisions in cuBLAS  : No support
 
     @param[in]
@@ -14956,8 +14923,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatched(hipblasHandle_t              
     @param[in]
     side    [hipblasSideMode_t]
             Specifies whether op(A_i) multiplies B_i from the left or right as follows:
-            HIPBLAS_SIDE_LEFT:       B_i := alpha*op( A_i )*B_i.
-            HIPBLAS_SIDE_RIGHT:      B_i := alpha*B_i*op( A_i ).
+            HIPBLAS_SIDE_LEFT:       C_i := alpha*op( A_i )*B_i.
+            HIPBLAS_SIDE_RIGHT:      C_i := alpha*B_i*op( A_i ).
 
     @param[in]
     uplo    [hipblasFillMode_t]
@@ -14968,8 +14935,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatched(hipblasHandle_t              
     @param[in]
     transA  [hipblasOperation_t]
             Specifies the form of op(A_i) to be used in the matrix multiplication as follows:
-            HIPBLAS_OP_N:    op(A_i) = A_i.
-            HIPBLAS_OP_T:      op(A_i) = A_i^T.
+            HIPBLAS_OP_N:  op(A_i) = A_i.
+            HIPBLAS_OP_T:  op(A_i) = A_i^T.
             HIPBLAS_OP_C:  op(A_i) = A_i^H.
 
     @param[in]
@@ -14980,11 +14947,11 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatched(hipblasHandle_t              
 
     @param[in]
     m       [int]
-            m specifies the number of rows of B_i. m >= 0.
+            m specifies the number of rows of B_i and C_i. m >= 0.
 
     @param[in]
     n       [int]
-            n specifies the number of columns of B_i. n >= 0.
+            n specifies the number of columns of B_i and C_i. n >= 0.
 
     @param[in]
     alpha
@@ -14993,7 +14960,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatched(hipblasHandle_t              
             entry.
 
     @param[in]
-    AP       Device pointer to the first matrix A_0 on the GPU.
+    A       Device pointer to the first matrix A_0 on the GPU.
             Each A_i is of dimension ( lda, k ), where k is m
             when  side == HIPBLAS_SIDE_LEFT  and
             is  n  when  side == HIPBLAS_SIDE_RIGHT.
@@ -15022,18 +14989,29 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatched(hipblasHandle_t              
               stride from the start of one matrix (A_i) and the next one (A_i+1)
 
     @param[inout]
-    BP       Device pointer to the first matrix B_0 on the GPU.
-            On entry,  the leading  m by n part of the array  B_i must
-           contain the matrix  B_i,  and  on exit  is overwritten  by the
-           transformed matrix.
+    B      Device pointer to the first matrix B_0 on the GPU. Each B_i is of
+           dimension ( ldb, n )
 
     @param[in]
     ldb    [int]
            ldb specifies the first dimension of B_i. ldb >= max( 1, m ).
 
-           @param[in]
+    @param[in]
     strideB  [hipblasStride]
               stride from the start of one matrix (B_i) and the next one (B_i+1)
+
+    @param[in]
+    C      Device pointer to the first matrix C_0 on the GPU. Each C_i is of
+           dimension ( ldc, n ).
+
+    @param[in]
+    ldc    [int]
+           ldc specifies the first dimension of C_i. ldc >= max( 1, m ).
+
+    @param[in]
+    strideC [hipblasStride]
+            stride from the start of one matrix (C_i) and the next one (C_i+1)
+
     @param[in]
     batchCount [int]
                 number of instances i in the batch.
@@ -15047,13 +15025,13 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasStrmmStridedBatched(hipblasHandle_t    han
                                                           int                m,
                                                           int                n,
                                                           const float*       alpha,
-                                                          const float*       AP,
+                                                          const float*       A,
                                                           int                lda,
                                                           hipblasStride      strideA,
-                                                          const float*       BP,
+                                                          const float*       B,
                                                           int                ldb,
                                                           hipblasStride      strideB,
-                                                          float*             CP,
+                                                          float*             C,
                                                           int                ldc,
                                                           hipblasStride      strideC,
                                                           int                batchCount);
@@ -15066,13 +15044,13 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDtrmmStridedBatched(hipblasHandle_t    han
                                                           int                m,
                                                           int                n,
                                                           const double*      alpha,
-                                                          const double*      AP,
+                                                          const double*      A,
                                                           int                lda,
                                                           hipblasStride      strideA,
-                                                          const double*      BP,
+                                                          const double*      B,
                                                           int                ldb,
                                                           hipblasStride      strideB,
-                                                          double*            CP,
+                                                          double*            C,
                                                           int                ldc,
                                                           hipblasStride      strideC,
                                                           int                batchCount);
@@ -15085,13 +15063,13 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasCtrmmStridedBatched(hipblasHandle_t       
                                                           int                   m,
                                                           int                   n,
                                                           const hipblasComplex* alpha,
-                                                          const hipblasComplex* AP,
+                                                          const hipblasComplex* A,
                                                           int                   lda,
                                                           hipblasStride         strideA,
-                                                          const hipblasComplex* BP,
+                                                          const hipblasComplex* B,
                                                           int                   ldb,
                                                           hipblasStride         strideB,
-                                                          hipblasComplex*       CP,
+                                                          hipblasComplex*       C,
                                                           int                   ldc,
                                                           hipblasStride         strideC,
                                                           int                   batchCount);
@@ -15104,16 +15082,17 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmStridedBatched(hipblasHandle_t       
                                                           int                         m,
                                                           int                         n,
                                                           const hipblasDoubleComplex* alpha,
-                                                          const hipblasDoubleComplex* AP,
+                                                          const hipblasDoubleComplex* A,
                                                           int                         lda,
                                                           hipblasStride               strideA,
-                                                          const hipblasDoubleComplex* BP,
+                                                          const hipblasDoubleComplex* B,
                                                           int                         ldb,
                                                           hipblasStride               strideB,
-                                                          hipblasDoubleComplex*       BC,
+                                                          hipblasDoubleComplex*       C,
                                                           int                         ldc,
                                                           hipblasStride               strideC,
                                                           int                         batchCount);
+//! @}
 
 /*! @{
     \brief BLAS Level 3 API

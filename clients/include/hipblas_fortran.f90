@@ -10468,7 +10468,7 @@ contains
 
     ! trmm
     function hipblasStrmmFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-                                 A, lda, B, ldb) &
+                                 A, lda, B, ldb, C, ldc) &
         bind(c, name='hipblasStrmmFortran')
         use iso_c_binding
         use hipblas_enums
@@ -10486,13 +10486,15 @@ contains
         integer(c_int), value :: lda
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
                 hipblasStrmmFortran = &
             hipblasStrmm(handle, side, uplo, transA, diag, m, n, alpha, &
-                         A, lda, B, ldb)
+                         A, lda, B, ldb, C, ldc)
     end function hipblasStrmmFortran
 
     function hipblasDtrmmFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-                                 A, lda, B, ldb) &
+                                 A, lda, B, ldb, C, ldc) &
         bind(c, name='hipblasDtrmmFortran')
         use iso_c_binding
         use hipblas_enums
@@ -10510,13 +10512,15 @@ contains
         integer(c_int), value :: lda
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
                 hipblasDtrmmFortran = &
             hipblasDtrmm(handle, side, uplo, transA, diag, m, n, alpha, &
-                         A, lda, B, ldb)
+                         A, lda, B, ldb, C, ldc)
     end function hipblasDtrmmFortran
 
     function hipblasCtrmmFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-                                 A, lda, B, ldb) &
+                                 A, lda, B, ldb, C, ldc) &
         bind(c, name='hipblasCtrmmFortran')
         use iso_c_binding
         use hipblas_enums
@@ -10534,13 +10538,15 @@ contains
         integer(c_int), value :: lda
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
                 hipblasCtrmmFortran = &
             hipblasCtrmm(handle, side, uplo, transA, diag, m, n, alpha, &
-                         A, lda, B, ldb)
+                         A, lda, B, ldb, C, ldc)
     end function hipblasCtrmmFortran
 
     function hipblasZtrmmFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-                                 A, lda, B, ldb) &
+                                 A, lda, B, ldb, C, ldc) &
         bind(c, name='hipblasZtrmmFortran')
         use iso_c_binding
         use hipblas_enums
@@ -10558,14 +10564,16 @@ contains
         integer(c_int), value :: lda
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
                 hipblasZtrmmFortran = &
             hipblasZtrmm(handle, side, uplo, transA, diag, m, n, alpha, &
-                         A, lda, B, ldb)
+                         A, lda, B, ldb, C, ldc)
     end function hipblasZtrmmFortran
 
     ! trmmBatched
     function hipblasStrmmBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-                                        A, lda, B, ldb, batch_count) &
+                                        A, lda, B, ldb, C, ldc, batch_count) &
         bind(c, name='hipblasStrmmBatchedFortran')
         use iso_c_binding
         use hipblas_enums
@@ -10583,14 +10591,16 @@ contains
         integer(c_int), value :: lda
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
         integer(c_int), value :: batch_count
                 hipblasStrmmBatchedFortran = &
             hipblasStrmmBatched(handle, side, uplo, transA, diag, m, n, alpha, &
-                                A, lda, B, ldb, batch_count)
+                                A, lda, B, ldb, C, ldc, batch_count)
     end function hipblasStrmmBatchedFortran
 
     function hipblasDtrmmBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-                                        A, lda, B, ldb, batch_count) &
+                                        A, lda, B, ldb, C, ldc, batch_count) &
         bind(c, name='hipblasDtrmmBatchedFortran')
         use iso_c_binding
         use hipblas_enums
@@ -10608,14 +10618,16 @@ contains
         integer(c_int), value :: lda
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
         integer(c_int), value :: batch_count
                 hipblasDtrmmBatchedFortran = &
             hipblasDtrmmBatched(handle, side, uplo, transA, diag, m, n, alpha, &
-                                A, lda, B, ldb, batch_count)
+                                A, lda, B, ldb, C, ldc, batch_count)
     end function hipblasDtrmmBatchedFortran
 
     function hipblasCtrmmBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-                                        A, lda, B, ldb, batch_count) &
+                                        A, lda, B, ldb, C, ldc, batch_count) &
         bind(c, name='hipblasCtrmmBatchedFortran')
         use iso_c_binding
         use hipblas_enums
@@ -10633,14 +10645,16 @@ contains
         integer(c_int), value :: lda
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
         integer(c_int), value :: batch_count
                 hipblasCtrmmBatchedFortran = &
             hipblasCtrmmBatched(handle, side, uplo, transA, diag, m, n, alpha, &
-                                A, lda, B, ldb, batch_count)
+                                A, lda, B, ldb, C, ldc, batch_count)
     end function hipblasCtrmmBatchedFortran
 
     function hipblasZtrmmBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-                                        A, lda, B, ldb, batch_count) &
+                                        A, lda, B, ldb, C, ldc, batch_count) &
         bind(c, name='hipblasZtrmmBatchedFortran')
         use iso_c_binding
         use hipblas_enums
@@ -10658,15 +10672,17 @@ contains
         integer(c_int), value :: lda
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
         integer(c_int), value :: batch_count
                 hipblasZtrmmBatchedFortran = &
             hipblasZtrmmBatched(handle, side, uplo, transA, diag, m, n, alpha, &
-                                A, lda, B, ldb, batch_count)
+                                A, lda, B, ldb, C, ldc, batch_count)
     end function hipblasZtrmmBatchedFortran
 
     ! trmmStridedBatched
     function hipblasStrmmStridedBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-                                               A, lda, stride_A, B, ldb, stride_B, batch_count) &
+                                               A, lda, stride_A, B, ldb, stride_B, C, ldc, stride_C, batch_count) &
         bind(c, name='hipblasStrmmStridedBatchedFortran')
         use iso_c_binding
         use hipblas_enums
@@ -10686,14 +10702,17 @@ contains
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
         integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
         integer(c_int), value :: batch_count
                 hipblasStrmmStridedBatchedFortran = &
             hipblasStrmmStridedBatched(handle, side, uplo, transA, diag, m, n, alpha, &
-                                       A, lda, stride_A, B, ldb, stride_B, batch_count)
+                                       A, lda, stride_A, B, ldb, stride_B, C, ldc, stride_C, batch_count)
     end function hipblasStrmmStridedBatchedFortran
 
     function hipblasDtrmmStridedBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-                                               A, lda, stride_A, B, ldb, stride_B, batch_count) &
+                                               A, lda, stride_A, B, ldb, stride_B, C, ldc, stride_C, batch_count) &
         bind(c, name='hipblasDtrmmStridedBatchedFortran')
         use iso_c_binding
         use hipblas_enums
@@ -10713,14 +10732,17 @@ contains
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
         integer(c_int64_t), value :: stride_B
+        type(c_ptr), value:: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
         integer(c_int), value :: batch_count
                 hipblasDtrmmStridedBatchedFortran = &
             hipblasDtrmmStridedBatched(handle, side, uplo, transA, diag, m, n, alpha, &
-                                       A, lda, stride_A, B, ldb, stride_B, batch_count)
+                                       A, lda, stride_A, B, ldb, stride_B, C, ldc, stride_C, batch_count)
     end function hipblasDtrmmStridedBatchedFortran
 
     function hipblasCtrmmStridedBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-                                               A, lda, stride_A, B, ldb, stride_B, batch_count) &
+                                               A, lda, stride_A, B, ldb, stride_B, C, ldc, stride_C, batch_count) &
         bind(c, name='hipblasCtrmmStridedBatchedFortran')
         use iso_c_binding
         use hipblas_enums
@@ -10740,14 +10762,17 @@ contains
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
         integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
         integer(c_int), value :: batch_count
                 hipblasCtrmmStridedBatchedFortran = &
             hipblasCtrmmStridedBatched(handle, side, uplo, transA, diag, m, n, alpha, &
-                                       A, lda, stride_A, B, ldb, stride_B, batch_count)
+                                       A, lda, stride_A, B, ldb, stride_B, C, ldc, stride_C, batch_count)
     end function hipblasCtrmmStridedBatchedFortran
 
     function hipblasZtrmmStridedBatchedFortran(handle, side, uplo, transA, diag, m, n, alpha, &
-                                               A, lda, stride_A, B, ldb, stride_B, batch_count) &
+                                               A, lda, stride_A, B, ldb, stride_B, C, ldc, stride_C, batch_count) &
         bind(c, name='hipblasZtrmmStridedBatchedFortran')
         use iso_c_binding
         use hipblas_enums
@@ -10767,10 +10792,13 @@ contains
         type(c_ptr), value :: B
         integer(c_int), value :: ldb
         integer(c_int64_t), value :: stride_B
+        type(c_ptr), value :: C
+        integer(c_int), value :: ldc
+        integer(c_int64_t), value :: stride_C
         integer(c_int), value :: batch_count
                 hipblasZtrmmStridedBatchedFortran = &
             hipblasZtrmmStridedBatched(handle, side, uplo, transA, diag, m, n, alpha, &
-                                       A, lda, stride_A, B, ldb, stride_B, batch_count)
+                                       A, lda, stride_A, B, ldb, stride_B, C, ldc, stride_C, batch_count)
     end function hipblasZtrmmStridedBatchedFortran
 
     ! trtri
