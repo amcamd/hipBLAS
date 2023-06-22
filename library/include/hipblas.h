@@ -14571,7 +14571,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZhemmStridedBatched(hipblasHandle_t       
         op( A ) = A   or   op( A ) = A^T   or   op( A ) = A^H.
 
     Note that trmm can provide in-place functionality by passing in the same address for both
-    matrices B and C.
+    matrices B and C and by setting ldb equal to ldc.
 
     - Supported precisions in rocBLAS : s,d,c,z
     - Supported precisions in cuBLAS  : s,d,c,z
@@ -14737,7 +14737,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmm(hipblasHandle_t             handle,
         op( A_i ) = A_i   or   op( A_i ) = A_i^T   or   op( A_i ) = A_i^H.
 
     Note that trmmBatched can provide in-place functionality by passing in the same address for both
-    matrices B and C.
+    matrices B and C and by setting ldb equal to ldc.
 
     - Supported precisions in rocBLAS : s,d,c,z
     - Supported precisions in cuBLAS  : No support
@@ -14911,7 +14911,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZtrmmBatched(hipblasHandle_t              
         op( A_i ) = A_i   or   op( A_i ) = A_i^T   or   op( A_i ) = A_i^H.
 
     Note that trmmStridedBatched can provide in-place functionality by passing
-    in the same address for both matrices B and C.
+    in the same address for both matrices B and C and by setting ldb equal to ldc.
 
     - Supported precisions in rocBLAS : s,d,c,z
     - Supported precisions in cuBLAS  : No support
