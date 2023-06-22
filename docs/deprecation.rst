@@ -91,6 +91,9 @@ Packed int8x4 was removed as support for arbitrary dimensioned int8_t data is a 
 * function hipblasSetInt8Datatype was removed
 * function hipblasGetInt8Datatype was removed
 
+Removed in hipBLAS 2.0
+^^^^^^^^^^^^^^^^^^^^^^
+
 Legacy BLAS in-place trmm
 '''''''''''''''''''''''''
 The legacay BLAS in-place hipblasXtrmm that calculates B <- alpha * op(A) * B is removed and replaced with the
